@@ -1,0 +1,19 @@
+{
+  "name": "h3-auth-service",
+  "version": "1.0.0",
+  "description": "authentication and authorization service for h3",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimjones26/h3-api-persistence.git"
+  },
+  "author": "jjones",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jimjones26/h3-api-persistence/issues"
+  },
+  "homepage": "https://github.com/jimjones26/h3-api-persistence#readme"
+}
