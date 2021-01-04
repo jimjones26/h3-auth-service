@@ -1,13 +1,13 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
-const catchAsync = require("./../utils/catchAsync");
-const userModel = require("./../models/userModel");
+const catchAsync = require('./../utils/catchAsync');
+const userModel = require('./../models/userModel');
 const {
   createMagicLinkToken,
   createAccessToken,
   createRefreshToken,
-} = require("./../utils/generateJwt");
-const { transporter, mailOptions } = require("./../utils/email");
+} = require('./../utils/generateJwt');
+const { transporter, mailOptions } = require('./../utils/email');
 
 /* POST /invite
   Handle user invite request
@@ -21,7 +21,7 @@ const { transporter, mailOptions } = require("./../utils/email");
 */
 exports.invite = catchAsync(async (req, res, next) => {
   const { email, parent_id } = req.body;
-  console.log("EMAIL, INVITER ID", { email, parent_id });
+  console.log('EMAIL, INVITER ID', { email, parent_id });
 
   // get user email and referring id from req.body
   // check to make sure the email has not been used
@@ -38,7 +38,6 @@ exports.invite = catchAsync(async (req, res, next) => {
 exports.login = catchAsync(async (req, res, next) => {
   // store email from request
   const { email } = req.body;
-  console.log("EMAIL: ", { email });
 
   // make sure email is not null and is well formed
   if (
@@ -49,8 +48,8 @@ exports.login = catchAsync(async (req, res, next) => {
       ))
   ) {
     return res.status(400).json({
-      status: "error",
-      message: "a valid email is required",
+      status: 'error',
+      message: 'a valid email is required',
     });
   }
 
@@ -65,19 +64,19 @@ exports.login = catchAsync(async (req, res, next) => {
     return transporter.sendMail(mailOptions(user.email, token), (error) => {
       if (error) {
         return res.status(500).json({
-          status: "error",
-          message: "cannot send email",
+          status: 'error',
+          message: 'cannot send email',
         });
       }
       return res.status(200).json({
-        status: "success",
+        status: 'success',
         message: `email to ${email} was successfully sent`,
       });
     });
   } else {
     // no user exists, return with 404 not found
     return res.status(404).json({
-      status: "error",
+      status: 'error',
       message: `user with email ${email} does not exist`,
     });
   }
@@ -100,14 +99,14 @@ exports.session = catchAsync(async (req, res, next) => {
     // get the user associated with the verified token
     const user = await userModel.getUserById(verified.id);
     const scopeKeyArray = user.users_scopes.map(function (item) {
-      return item.scope["name"];
+      return item.scope['name'];
     });
 
     // if there is no user, respond with not found
     if (!user) {
       return res.status(404).json({
-        status: "error",
-        message: "user not found",
+        status: 'error',
+        message: 'user not found',
       });
     } else {
       // create a refresh token
@@ -127,16 +126,16 @@ exports.session = catchAsync(async (req, res, next) => {
 
       // send the tokens in the response
       res.status(200).json({
-        status: "success",
-        message: "user session created",
+        status: 'success',
+        message: 'user session created',
         accessToken,
         refreshToken,
       });
     }
   } catch (error) {
     res.status(401).json({
-      status: "error",
-      message: "token is invalid",
+      status: 'error',
+      message: 'token is invalid',
     });
   }
 });
@@ -147,7 +146,7 @@ exports.session = catchAsync(async (req, res, next) => {
 exports.refresh_tokens = catchAsync(async (req, res, next) => {
   // store refresh token
   const refreshToken = req.body.refreshToken;
-  console.log("TOKEN: ", refreshToken);
+  console.log('TOKEN: ', refreshToken);
 
   // check validity of refresh token
   const decodedToken = await jwt.verify(
@@ -155,7 +154,7 @@ exports.refresh_tokens = catchAsync(async (req, res, next) => {
     process.env.REFRESH_TOKEN_SECRET,
     (error, decoded) => {
       if (error) {
-        console.log("DECODE ERROR ", error);
+        console.log('DECODE ERROR ', error);
         return null;
       } else {
         return decoded;
@@ -169,7 +168,7 @@ exports.refresh_tokens = catchAsync(async (req, res, next) => {
     const tokenVersionMatch = user.token_version === decodedToken.tokenVersion;
 
     const scopeKeyArray = user.users_scopes.map(function (item) {
-      return item.scope["name"];
+      return item.scope['name'];
     });
 
     if (user && tokenVersionMatch) {
@@ -191,15 +190,15 @@ exports.refresh_tokens = catchAsync(async (req, res, next) => {
       res.status(200).json({ refreshToken, accessToken });
     } else {
       res.status(403).json({
-        status: "error",
-        message: "unable to create new tokens",
+        status: 'error',
+        message: 'unable to create new tokens',
       });
     }
   } else {
     // token is not valid
     res.status(403).json({
-      status: "error",
-      message: "refresh token is invalid",
+      status: 'error',
+      message: 'refresh token is invalid',
     });
   }
 });
@@ -221,13 +220,13 @@ exports.revoke_tokens = catchAsync(async (req, res, next) => {
 
       await userModel.revokeRefreshToken(user.id, user.token_version + 1);
       res.status(200).json({
-        status: "success",
-        message: "user tokens revoked",
+        status: 'success',
+        message: 'user tokens revoked',
       });
     } catch (error) {
       res.status(404).json({
-        status: "error",
-        message: "unable to log user out",
+        status: 'error',
+        message: 'unable to log user out',
       });
     }
   }
