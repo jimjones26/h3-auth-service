@@ -14,8 +14,8 @@ exports.getUserById = (id) => {
       id,
     }
   ).then((resAsJson) => {
-    if (resAsJson.data.td_users.length > 0) {
-      return resAsJson.data.td_users[0];
+    if (resAsJson.data.h3_users.length > 0) {
+      return resAsJson.data.h3_users[0];
     } else {
       return null;
     }
@@ -46,7 +46,7 @@ exports.revokeRefreshToken = (id, tokenVersion) => {
       id,
       tokenVersion,
     }
-  ).then((resAsJson) => resAsJson.data.update_td_users.returning[0]);
+  ).then((resAsJson) => resAsJson.data.update_h3_users.returning[0]);
 };
 
 const createNewUser = (email) => {
@@ -57,8 +57,8 @@ const createNewUser = (email) => {
       email,
     }
   ).then((resAsJson) => {
-    if (resAsJson.data.insert_td_users.returning.length > 0) {
-      return resAsJson.data.insert_td_users.returning[0];
+    if (resAsJson.data.insert_h3_users.returning.length > 0) {
+      return resAsJson.data.insert_h3_users.returning[0];
     } else {
       throw Error('user not created');
     }
