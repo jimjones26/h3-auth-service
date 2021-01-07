@@ -1,11 +1,11 @@
 module.exports.GET_USER_BY_ID = `
 query GetUserById($id: Int!) {
-  __typename
   h3_users(where: {id: {_eq: $id}}) {
     id
     email
     first_name
     last_name
+    first_visit
     token_version
     users_scopes {
       scope {
@@ -18,12 +18,12 @@ query GetUserById($id: Int!) {
 
 module.exports.GET_USER_BY_EMAIL = `
 query GetUserByEmail($email: String!) {
-  __typename
   h3_users(where: {email: {_eq: $email}}) {
     id
     email
     first_name
     last_name
+    first_visit
     token_version
     users_scopes {
       scope {

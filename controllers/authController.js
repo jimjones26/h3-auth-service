@@ -183,6 +183,7 @@ exports.refresh_tokens = catchAsync(async (req, res, next) => {
         user.email,
         user.first_name,
         user.last_name,
+        user.first_visit,
         scopeKeyArray
       );
 
