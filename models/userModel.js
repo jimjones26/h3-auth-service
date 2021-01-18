@@ -59,6 +59,7 @@ exports.createNewClient = (user) => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
     }
   ).then((resAsJson) => {
     if (resAsJson.data.insert_h3_users.returning.length > 0) {

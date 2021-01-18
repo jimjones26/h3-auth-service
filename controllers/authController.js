@@ -40,7 +40,6 @@ exports.invite = catchAsync(async (req, res, next) => {
 exports.createClient = catchAsync(async (req, res, next) => {
   // store the user from the request
   const { user } = req.body;
-  console.log(user.email);
 
   // make sure email is not null and is well formed
   if (
@@ -58,9 +57,32 @@ exports.createClient = catchAsync(async (req, res, next) => {
 
   // store the new user in the request
   const newUser = await userModel.createNewClient(user);
-  console.log('NEW USER: ', newUser);
 
-  // take the user data from request and insert into database
+  // take new user and create a magic link token, then send email
+  if (user) {
+    // if user exists, create a magic link login token
+    const token = await createMagicLinkToken(newUser.id, newUser.email);
+
+    // try to send email
+    return transporter.sendMail(mailOptions(newUser.email, token), (error) => {
+      if (error) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'cannot send email',
+        });
+      }
+      return res.status(200).json({
+        status: 'success',
+        message: `email to ${user.email} was successfully sent`,
+      });
+    });
+  } else {
+    // user not created, respond with 500
+    return res.status(500).json({
+      status: 'error',
+      message: `unable to create a new user with the email ${user.email}`,
+    });
+  }
 
   // if successful insert, create a login jwt and send to user email
 });

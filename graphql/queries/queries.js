@@ -59,13 +59,14 @@ mutation IncrementTokenVersion($id: Int!, $tokenVersion: Int!) {
 `;
 
 module.exports.INSERT_CLIENT = `
-mutation CreateNewClient($email: String!, $firstName: String!, $lastName: String!) {
-  insert_h3_users(objects: {email: $email, first_name: $firstName, last_name: $lastName, users_scopes: {data: {scope_id: 1}}}) {
+mutation CreateNewClient($email: String!, $firstName: String!, $lastName: String!, $phoneNumber: String!) {
+  insert_h3_users(objects: {email: $email, first_name: $firstName, last_name: $lastName, phone_number: $phoneNumber, users_scopes: {data: {scope_id: 1}}}) {
     returning {
       id
       first_name
       last_name
       email
+      phone_number
     }
   }
 }
