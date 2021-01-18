@@ -30,6 +30,41 @@ exports.invite = catchAsync(async (req, res, next) => {
   // respond with either success or failure
 });
 
+/* POST /create
+  Handle create user request
+  - get the user object from the request
+  - check the email in user object, make sure it is valid format
+  - check database to see if user with that email already exists
+  - 
+*/
+exports.createClient = catchAsync(async (req, res, next) => {
+  // store the user from the request
+  const { user } = req.body;
+  console.log(user.email);
+
+  // make sure email is not null and is well formed
+  if (
+    !user.email ||
+    (user.email &&
+      !user.email.match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      ))
+  ) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'a valid email is required',
+    });
+  }
+
+  // store the new user in the request
+  const newUser = await userModel.createNewClient(user);
+  console.log('NEW USER: ', newUser);
+
+  // take the user data from request and insert into database
+
+  // if successful insert, create a login jwt and send to user email
+});
+
 /* POST /login
   Handle user login request (send magic link)
   (this is the only route that does not require a valid cookie from a user)

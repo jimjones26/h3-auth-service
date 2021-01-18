@@ -4,6 +4,7 @@ const {
   INSERT_USER,
   GET_USER_BY_ID,
   INCREMENT_TOKEN_VERSION,
+  INSERT_CLIENT,
 } = require('./../graphql/queries/queries');
 
 exports.getUserById = (id) => {
@@ -47,6 +48,25 @@ exports.revokeRefreshToken = (id, tokenVersion) => {
       tokenVersion,
     }
   ).then((resAsJson) => resAsJson.data.update_h3_users.returning[0]);
+};
+
+exports.createNewClient = (user) => {
+  console.log('BLAH: ', user);
+  return gqlClient(
+    INSERT_CLIENT,
+    { 'Content-Type': 'application/json' },
+    {
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    }
+  ).then((resAsJson) => {
+    if (resAsJson.data.insert_h3_users.returning.length > 0) {
+      return resAsJson.data.insert_h3_users.returning[0];
+    } else {
+      throw Error('user not created');
+    }
+  });
 };
 
 const createNewUser = (email) => {
