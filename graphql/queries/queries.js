@@ -71,3 +71,13 @@ mutation CreateNewClient($email: String!, $firstName: String!, $lastName: String
   }
 }
 `;
+
+module.exports.INSERT_PRACTITIONER = `
+mutation CreateNewPractitioner($email: String!) {
+  insert_h3_users(objects: {email: $email, users_scopes: {data: {scope_id: 2}}}) {
+    returning {
+      id
+      email
+    }
+  }
+}`;

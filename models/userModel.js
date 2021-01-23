@@ -5,6 +5,7 @@ const {
   GET_USER_BY_ID,
   INCREMENT_TOKEN_VERSION,
   INSERT_CLIENT,
+  INSERT_PRACTITIONER,
 } = require('./../graphql/queries/queries');
 
 exports.getUserById = (id) => {
@@ -70,9 +71,9 @@ exports.createNewClient = (user) => {
   });
 };
 
-const createNewUser = (email) => {
+exports.createNewPractitioner = (email) => {
   return gqlClient(
-    INSERT_USER,
+    INSERT_PRACTITIONER,
     { 'Content-Type': 'application/json' },
     {
       email,

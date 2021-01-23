@@ -9,25 +9,70 @@ const {
 } = require('./../utils/generateJwt');
 const { transporter, mailOptions } = require('./../utils/email');
 
-/* POST /invite
-  Handle user invite request
-  - request route /invite with email and inviting id
-  - check to see if user already exists
-  - if exists, respond with user already exits
-  - if not exists, create a new user with supplied email
-  - link new user to inviting user
-  - send invite email (will contain welcome text and magic link)
-  - respond with success or error
+/* POST /invite-practitioner
+  Handle practitioner invite request
 */
-exports.invite = catchAsync(async (req, res, next) => {
-  const { email, parent_id } = req.body;
-  console.log('EMAIL, INVITER ID', { email, parent_id });
+exports.invitePractitioner = catchAsync(async (req, res, next) => {
+  // grab the email from the req
+  const { email } = req.body;
 
-  // get user email and referring id from req.body
-  // check to make sure the email has not been used
-  // create new user with email and parent id
-  // send welcome and verification link to new email
-  // respond with either success or failure
+  // make sure the email is properly formed
+  if (
+    !email ||
+    (email &&
+      !email.match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      ))
+  ) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'a valid email is required',
+    });
+  }
+
+  // if email is valid, check to make sure it does not exist in db
+  let existingUser = await userModel.getUserByEmail(email);
+  if (existingUser) {
+    return res.status(409).json({
+      status: 'error',
+      message: 'a user with this email already exists',
+    });
+  }
+
+  // add the email to the database
+  const newPractitioner = await userModel.createNewPractitioner(email);
+
+  // take new user and create magic link
+  if (newPractitioner) {
+    // if user exists, create a magic link login token
+    const token = await createMagicLinkToken(
+      newPractitioner.id,
+      newPractitioner.email
+    );
+
+    // try to send email
+    return transporter.sendMail(
+      mailOptions(newPractitioner.email, token),
+      (error) => {
+        if (error) {
+          return res.status(500).json({
+            status: 'error',
+            message: 'cannot send email',
+          });
+        }
+        return res.status(200).json({
+          status: 'success',
+          message: `email to ${newPractitioner.email} was successfully sent`,
+        });
+      }
+    );
+  } else {
+    // user not created, respond with 500
+    return res.status(500).json({
+      status: 'error',
+      message: `unable to create a new user with the email ${newPractitioner.email}`,
+    });
+  }
 });
 
 /* POST /create
@@ -83,8 +128,6 @@ exports.createClient = catchAsync(async (req, res, next) => {
       message: `unable to create a new user with the email ${user.email}`,
     });
   }
-
-  // if successful insert, create a login jwt and send to user email
 });
 
 /* POST /login
