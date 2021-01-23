@@ -59,8 +59,8 @@ mutation IncrementTokenVersion($id: Int!, $tokenVersion: Int!) {
 `;
 
 module.exports.INSERT_CLIENT = `
-mutation CreateNewClient($email: String!, $firstName: String!, $lastName: String!, $phoneNumber: String!) {
-  insert_h3_users(objects: {email: $email, first_name: $firstName, last_name: $lastName, phone_number: $phoneNumber, users_scopes: {data: {scope_id: 1}}}) {
+mutation CreateNewClient($email: String!, $scopeId: Int!, $firstName: String!, $lastName: String!, $phoneNumber: String!) {
+  insert_h3_users(objects: {email: $email, first_name: $firstName, last_name: $lastName, phone_number: $phoneNumber, users_scopes: {data: {scope_id: $scopeId}}}) {
     returning {
       id
       first_name
@@ -73,11 +73,20 @@ mutation CreateNewClient($email: String!, $firstName: String!, $lastName: String
 `;
 
 module.exports.INSERT_PRACTITIONER = `
-mutation CreateNewPractitioner($email: String!) {
-  insert_h3_users(objects: {email: $email, users_scopes: {data: {scope_id: 2}}}) {
+mutation CreateNewPractitioner($email: String!, $scopeId: Int!) {
+  insert_h3_users(objects: {email: $email, users_scopes: {data: {scope_id: $scopeId}}}) {
     returning {
       id
       email
     }
   }
-}`;
+}
+`;
+
+module.exports.GET_SCOPE_ID_BY_NAME = `
+query GetScopeIdByName($scopeName: String!) {
+  h3_scopes(where: {name: {_eq: $scopeName}}) {
+    id
+  }
+}
+`;

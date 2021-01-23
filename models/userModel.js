@@ -51,7 +51,7 @@ exports.revokeRefreshToken = (id, tokenVersion) => {
   ).then((resAsJson) => resAsJson.data.update_h3_users.returning[0]);
 };
 
-exports.createNewClient = (user) => {
+exports.createNewClient = (user, scopeId) => {
   console.log('BLAH: ', user);
   return gqlClient(
     INSERT_CLIENT,
@@ -61,6 +61,7 @@ exports.createNewClient = (user) => {
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
+      scopeId,
     }
   ).then((resAsJson) => {
     if (resAsJson.data.insert_h3_users.returning.length > 0) {
@@ -71,12 +72,13 @@ exports.createNewClient = (user) => {
   });
 };
 
-exports.createNewPractitioner = (email) => {
+exports.createNewPractitioner = (email, scopeId) => {
   return gqlClient(
     INSERT_PRACTITIONER,
     { 'Content-Type': 'application/json' },
     {
       email,
+      scopeId,
     }
   ).then((resAsJson) => {
     if (resAsJson.data.insert_h3_users.returning.length > 0) {

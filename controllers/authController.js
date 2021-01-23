@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const catchAsync = require('./../utils/catchAsync');
 const userModel = require('./../models/userModel');
+const scopeModel = require('./../models/scopeModel');
 const {
   createMagicLinkToken,
   createAccessToken,
@@ -32,6 +33,7 @@ exports.invitePractitioner = catchAsync(async (req, res, next) => {
 
   // if email is valid, check to make sure it does not exist in db
   let existingUser = await userModel.getUserByEmail(email);
+
   if (existingUser) {
     return res.status(409).json({
       status: 'error',
@@ -39,8 +41,14 @@ exports.invitePractitioner = catchAsync(async (req, res, next) => {
     });
   }
 
+  // get the practitioner scope id
+  const scope = await scopeModel.getScopeIdByName('practitioner');
+
   // add the email to the database
-  const newPractitioner = await userModel.createNewPractitioner(email);
+  const newPractitioner = await userModel.createNewPractitioner(
+    email,
+    scope.id
+  );
 
   // take new user and create magic link
   if (newPractitioner) {
@@ -100,8 +108,11 @@ exports.createClient = catchAsync(async (req, res, next) => {
     });
   }
 
+  // get the client scope id
+  const scope = await scopeModel.getScopeIdByName('client');
+
   // store the new user in the request
-  const newUser = await userModel.createNewClient(user);
+  const newUser = await userModel.createNewClient(user, scope.id);
 
   // take new user and create a magic link token, then send email
   if (user) {
