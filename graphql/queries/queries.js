@@ -12,8 +12,12 @@ query GetUserById($id: Int!) {
         name
       }
     }
+    practitioners {
+      setup_complete
+    }
   }
 }
+
 `;
 
 module.exports.GET_USER_BY_EMAIL = `

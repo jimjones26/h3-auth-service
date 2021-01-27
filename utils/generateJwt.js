@@ -18,10 +18,11 @@ module.exports.createAccessToken = (
   firstName,
   lastName,
   firstVisit,
+  setupComplete,
   scope
 ) => {
   return jwt.sign(
-    { id, email, firstName, lastName, firstVisit, scope },
+    { id, email, firstName, lastName, firstVisit, setupComplete, scope },
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: '15m',

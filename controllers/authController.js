@@ -226,6 +226,9 @@ exports.session = catchAsync(async (req, res, next) => {
         user.token_version
       );
 
+      const setupComplete = user.practitioners[0]
+        ? user.practitioners[0].setup_complete
+        : null;
       // create an access token
       const accessToken = await createAccessToken(
         user.id,
@@ -233,6 +236,7 @@ exports.session = catchAsync(async (req, res, next) => {
         user.first_name,
         user.last_name,
         user.first_visit,
+        setupComplete,
         scopeKeyArray
       );
 
